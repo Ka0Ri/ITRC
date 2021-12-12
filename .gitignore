@@ -133,3 +133,6 @@ dataset
 
 # checkpoint
 *.pt
+
+#test img
+results
