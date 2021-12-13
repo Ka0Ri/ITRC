@@ -10,6 +10,7 @@ python yolov5/train.py --img 416 --batch 16 --epochs 75 --data dataset/hardhat/d
 python yolov5/detect.py --weights yolov5/runs/train/hardhat_yolov5s_results2/weights/best.pt --img 416 --conf 0.5 --source dataset/hardhat/test/images/
 
 ====================================
+
 python detect.py --source 0  # webcam
                           img.jpg  # image 
                           vid.mp4  # video
@@ -18,7 +19,8 @@ python detect.py --source 0  # webcam
                           'https://youtu.be/Zgi9g1ksQHc'  # YouTube
                           'rtsp://example.com/media.mp4'  # RTSP, RTMP, HTTP stream
 
-python yolov5/detect.py --weights yolov5/runs/train/hardhat_yolov5s_results2/weights/best.pt --img 416 --conf 0.5 --source dataset/hardhat/real_test/video.mp4
+#python yolov5/detect.py --weights yolov5/runs/train/hardhat_yolov5s_results2/weights/best.pt --img 416 --conf 0.5 --source dataset/hardhat/real_test/video.mp4
+
 ====================================
 
 
