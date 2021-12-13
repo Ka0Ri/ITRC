@@ -46,9 +46,13 @@ python SwinIR/main_test_swinir.py --task real_sr --model_path SwinIR/experiments
 ## Helmet detection
 ![alt text](results_img/detection.jpg)
 ## Super - resolution
+![alt text](results_img/org.jpg)
 
+![alt text](results_img/results_sr.jpg)
 ## Denoising
+![alt text](results_img/noise.jpg)
 
+![alt text](results_img/results_denoise.jpg)
 # reference
 Yolo 5: https://github.com/ultralytics/yolov5
 
