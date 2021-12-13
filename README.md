@@ -1,5 +1,5 @@
 # ITRC
-this project for working on Multi object detection model
+this project for working on Multi models to solve computer vison-based CCTV on the construction field
 
 
 # Training and testing commands
