@@ -41,3 +41,15 @@ python SwinIR/main_test_swinir.py --task color_dn --model_path SwinIR/experiment
 
 #testing sr
 python SwinIR/main_test_swinir.py --task real_sr --model_path SwinIR/experiments/pretrained_models/003_realSR_BSRGAN_DFO_s64w8_SwinIR-M_x4_GAN.pth --folder_lq Image_SR_test/ --scale 4
+
+# Visualization results
+## Helmet detection
+![alt text](results_img/detection.jpg)
+## Super - resolution
+
+## Denoising
+
+# reference
+Yolo 5: https://github.com/ultralytics/yolov5
+
+SwinIR: https://github.com/JingyunLiang/SwinIR

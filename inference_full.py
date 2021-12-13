@@ -72,8 +72,8 @@ class Final_inference():
         exp_listdir = [s[:3] + "0" + s[3:]  for s in os.listdir("./results/yolo_detect")]
         exp_listdir.sort(key=lambda f: int(re.sub('\D', '', f)))
         final_dir = exp_listdir[-1]
-        print(final_dir)
-
+        final_dir = final_dir[:2] + final_dir[3:]
+      
         detected_image = cv2.imread(os.path.join("./results/yolo_detect", final_dir, "test.png"))
         
         return detected_image
@@ -169,17 +169,17 @@ if __name__ == "__main__":
     # cv2.imwrite("results/results_sr.jpg", out_img)
 
     #test denoise
-    # enhancer = Final_inference(mode='denoising', 
-    #         ckpt_path="SwinIR/experiments/pretrained_models/005_colorDN_DFWB_s128w8_SwinIR-M_noise25.pth")
+    enhancer = Final_inference(mode='denoising', 
+            ckpt_path="SwinIR/experiments/pretrained_models/005_colorDN_DFWB_s128w8_SwinIR-M_noise25.pth")
     
-    # img = cv2.imread("dataset/Image_Denoise_test/005321_jpg.rf.149d4fd7de04bf4b2153cded33d18492.jpg")
-    # out_img = enhancer.denoise(img)
-    # cv2.imwrite("results/results_denoise.jpg", out_img)
+    img = cv2.imread("dataset/Image_Denoise_test/005321_jpg.rf.149d4fd7de04bf4b2153cded33d18492.jpg")
+    out_img = enhancer.denoise(img)
+    cv2.imwrite("results/results_denoise.jpg", out_img)
 
     #test detection
-    detector = Final_inference(mode="detection", ckpt_path="yolov5/runs/train/Mask_yolov5s_results/weights/best.pt")
-    img = cv2.imread("dataset/Image_SR_test/005321_jpg.rf.149d4fd7de04bf4b2153cded33d18492.jpg")
-    out_img = detector.detection_run(img)
+    # detector = Final_inference(mode="detection", ckpt_path="yolov5/runs/train/Mask_yolov5s_results/weights/best.pt")
+    # img = cv2.imread("dataset/Image_SR_test/005321_jpg.rf.149d4fd7de04bf4b2153cded33d18492.jpg")
+    # out_img = detector.detection_run(img)
 
     pass
 
