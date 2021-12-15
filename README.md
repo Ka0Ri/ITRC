@@ -62,3 +62,5 @@ python SwinIR/main_test_swinir.py --task real_sr --model_path SwinIR/experiments
 Yolo 5: https://github.com/ultralytics/yolov5
 
 SwinIR: https://github.com/JingyunLiang/SwinIR
+
+Depth Prediction Transformer: https://github.com/isl-org/DPT
