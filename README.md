@@ -54,10 +54,10 @@ python SwinIR/main_test_swinir.py --task real_sr --model_path SwinIR/experiments
 
 ![alt text](results_img/results_denoise.jpg)
 
-##Depth estimation
+## Depth estimation
 ![alt text](results_img/1.png)
 
-![alt text](results_img/results_depth.jpg)
+![alt text](results_img/results_depth.png)
 # reference
 Yolo 5: https://github.com/ultralytics/yolov5
 
