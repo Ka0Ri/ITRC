@@ -136,3 +136,6 @@ dataset
 
 #test img
 results
+
+*.png
+*.jpg
