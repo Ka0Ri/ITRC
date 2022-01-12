@@ -1,8 +1,11 @@
 #training: hardhat
 python yolov5/train.py --img 416 --batch 16 --epochs 75 --data dataset/hardhat/data.yaml --cfg yolov5/models/yolov5s.yaml --weights yolov5s.pt --name hardhat_yolov5s_results
 
-#testing
+#testing: hardhat
 python yolov5/detect.py --weights yolov5/runs/train/hardhat_yolov5s_results2/weights/best.pt --img 416 --conf 0.5 --source dataset/hardhat/test/images/
+
+#testing: video hardhat
+python yolov5/detect.py --weights yolov5/runs/train/hardhat_yolov5s_results2/weights/best.pt --img 416 --conf 0.5 --source dataset/video/CCTV1.mp4
 
 ====================================
 python detect.py --source 0  # webcam
@@ -20,17 +23,34 @@ python yolov5/detect.py --weights yolov5/runs/train/hardhat_yolov5s_results2/wei
 #training: Thermaldogpeople
 python yolov5/train.py --img 416 --batch 16 --epochs 75 --data dataset/Thermaldogpeople/data.yaml --cfg yolov5/models/yolov5s.yaml --weights yolov5s.pt --name Thermaldogpeople_yolov5s_results
 
-#testing
+#testing: Thermaldogpeople
 python yolov5/detect.py --weights yolov5/runs/train/Thermaldogpeople_yolov5s_results/weights/best.pt --img 416 --conf 0.5 --source dataset/Thermaldogpeople/test/images/
 
-#training: Thermaldogpeople
+#testing: video Thermal
+python yolov5/detect.py --weights yolov5/runs/train/Thermaldogpeople_yolov5s_results/weights/best.pt --img 416 --conf 0.5 --source dataset/video/Thermal1.mp4
+
+====================================
+
+#training: MASK dataset
 python yolov5/train.py --img 416 --batch 16 --epochs 100 --data dataset/Mask/data.yaml --cfg yolov5/models/yolov5s.yaml --weights yolov5s.pt --name Mask_yolov5s_results
 
-#testing
+#testing: MASK images
 python yolov5/detect.py --weights yolov5/runs/train/Mask_yolov5s_results/weights/best.pt --img 416 --conf 0.5 --source dataset/Mask/test/images/
 
+#testing video MASK
+python yolov5/detect.py --weights yolov5/runs/train/Mask_yolov5s_results/weights/best.pt --img 416 --conf 0.5 --source dataset/video/MASK1.mp4
+
+====================================
+
 #testing denoising
-python SwinIR/main_test_swinir.py --task color_dn --model_path SwinIR/experiments/pretrained_models/005_colorDN_DFWB_s128w8_SwinIR-M_noise20.pth --folder_gt Image_Denoise_test --noise 20
+python SwinIR/main_test_swinir.py --task color_dn --model_path SwinIR/experiments/pretrained_models/005_colorDN_DFWB_s128w8_SwinIR-M_noise25.pth --folder_gt dataset/video/CCTV1_noisy --noise 25
+
+====================================
 
 #testing sr
-python SwinIR/main_test_swinir.py --task real_sr --model_path SwinIR/experiments/pretrained_models/003_realSR_BSRGAN_DFO_s64w8_SwinIR-M_x4_GAN.pth --folder_lq Image_SR_test/ --scale 4
+python SwinIR/main_test_swinir.py --task real_sr --model_path SwinIR/experiments/pretrained_models/003_realSR_BSRGAN_DFO_s64w8_SwinIR-M_x4_GAN.pth --folder_lq dataset/video/CCTV1 --scale 4
+
+====================================
+
+#testing depth
+python DPT/run_monodepth.py --input_path="results/swinir_real_sr_x4" --output_path="results/Depth" --model_weights="DPT/weights/dpt_hybrid-midas-501f0c75.pt"
