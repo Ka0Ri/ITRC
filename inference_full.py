@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import torch
-from torch import nn
-from torch import functional
-from torchvision import datasets, transforms, models
-import torch.nn.functional as F
+# from torch import nn
+# from torch import functional
+# from torchvision import datasets, transforms, models
+# import torch.nn.functional as F
 import cv2
 from PIL import Image
 import numpy as np
@@ -13,6 +13,13 @@ import os
 from SwinIR.models.network_swinir import SwinIR
 from yolov5.detect import run
 import re
+
+#For Depth estimation
+from torchvision.transforms import Compose
+import DPT.util.io as io
+from DPT.dpt.models import DPTDepthModel
+# from DPT.dpt.midas_net import MidasNet_large
+from DPT.dpt.transforms import Resize, NormalizeImage, PrepareForNet
 
 class Final_inference():
 
@@ -51,11 +58,40 @@ class Final_inference():
 
         elif(mode == "detection"):
             self.model_ckpt = ckpt_path
+
+        elif(mode == "depth"):
+            net_w = 384
+            net_h = 384
+            try:
+                self.model = DPTDepthModel(
+                    path=ckpt_path,
+                    backbone="vitb_rn50_384",
+                    non_negative=True,
+                    enable_attention_hooks=False,
+                ).to(device)
+            except: print("Loading model failed")
+            self.model.eval()
+            normalization = NormalizeImage(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+            transform = Compose(
+                [
+                    Resize(
+                        net_w,
+                        net_h,
+                        resize_target=None,
+                        keep_aspect_ratio=True,
+                        ensure_multiple_of=32,
+                        resize_method="minimal",
+                        image_interpolation_method=cv2.INTER_CUBIC,
+                    ),
+                    normalization,
+                    PrepareForNet(),
+                ]
+            )
         
         else:
             print("mode is not supported")
 
-        self.transfrom = transform
+        self.transform = transform
         self.device = device
 
     def detection_run(self, input_img):
@@ -123,6 +159,42 @@ class Final_inference():
 
         return output
 
+
+    def depth_estimate(self, input_img):
+   
+        img = cv2.cvtColor(input_img, cv2.COLOR_BGR2RGB) / 255.0
+        img_input = self.transform({"image": img})["image"]
+
+        with torch.no_grad():
+            sample = torch.from_numpy(img_input).to(self.device).unsqueeze(0)
+
+            prediction = self.model.forward(sample)
+            prediction = (
+                torch.nn.functional.interpolate(
+                    prediction.unsqueeze(1),
+                    size=img.shape[:2],
+                    mode="bicubic",
+                    align_corners=False,
+                )
+                .squeeze()
+                .cpu()
+                .numpy()
+            )
+
+        depth = prediction
+        depth_min = depth.min()
+        depth_max = depth.max()
+
+        max_val = (2 ** (8 * 2)) - 1
+
+        if depth_max - depth_min > np.finfo("float").eps:
+            out = max_val * (depth - depth_min) / (depth_max - depth_min)
+        else:
+            out = np.zeros(depth.shape, dtype=depth.dtype)
+
+        return out
+        
+
     
     def denoise(self, input_img):
 
@@ -160,7 +232,7 @@ if __name__ == "__main__":
     #             transforms.ToTensor(),
     #             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
 
-    #test sr
+    # test sr
     # enhancer = Final_inference(mode='sr', 
     #         ckpt_path="SwinIR/experiments/pretrained_models/003_realSR_BSRGAN_DFO_s64w8_SwinIR-M_x4_GAN.pth")
     
@@ -169,19 +241,24 @@ if __name__ == "__main__":
     # cv2.imwrite("results/results_sr.jpg", out_img)
 
     #test denoise
-    enhancer = Final_inference(mode='denoising', 
-            ckpt_path="SwinIR/experiments/pretrained_models/005_colorDN_DFWB_s128w8_SwinIR-M_noise25.pth")
+    # enhancer = Final_inference(mode='denoising', 
+    #         ckpt_path="SwinIR/experiments/pretrained_models/005_colorDN_DFWB_s128w8_SwinIR-M_noise25.pth")
     
-    img = cv2.imread("dataset/Image_Denoise_test/005321_jpg.rf.149d4fd7de04bf4b2153cded33d18492.jpg")
-    out_img = enhancer.denoise(img)
-    cv2.imwrite("results/results_denoise.jpg", out_img)
+    # img = cv2.imread("dataset/Image_Denoise_test/005321_jpg.rf.149d4fd7de04bf4b2153cded33d18492.jpg")
+    # out_img = enhancer.denoise(img)
+    # cv2.imwrite("results/results_denoise.jpg", out_img)
 
-    #test detection
+    # test detection
     # detector = Final_inference(mode="detection", ckpt_path="yolov5/runs/train/Mask_yolov5s_results/weights/best.pt")
     # img = cv2.imread("dataset/Image_SR_test/005321_jpg.rf.149d4fd7de04bf4b2153cded33d18492.jpg")
     # out_img = detector.detection_run(img)
 
-    pass
+    #test depth
+    estimator = Final_inference(mode="depth", ckpt_path="DPT/weights/dpt_hybrid-midas-501f0c75.pt")
+    img = cv2.imread("dataset/1.png")
+    out_img = estimator.depth_estimate(img)
+    cv2.imwrite("results/results_depth.png", out_img.astype("uint16"), [cv2.IMWRITE_PNG_COMPRESSION, 0])
+   
 
 
 
